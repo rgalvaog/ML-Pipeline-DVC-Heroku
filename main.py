@@ -8,6 +8,9 @@ Main.py creates the endpoints for FastAPI.
 
 '''
 
+# Heroku Code for DVC Integration
+
+
 # Import libraries
 import os
 import pandas as pd
@@ -17,6 +20,13 @@ from fastapi import FastAPI
 from pydantic import BaseModel
 from data import process_data
 from model import inference as infr
+
+# Heroku Code for DVC Integration
+if "DYNO" in os.environ and os.path.isdir(".dvc"):
+    os.system("dvc config core.no_scm true")
+    if os.system("dvc pull") != 0:
+        exit("dvc pull failed")
+    os.system("rm -r .dvc .apt/usr/lib/dvc")
 
 #Instantiate FastAPI
 app = FastAPI()
