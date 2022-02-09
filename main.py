@@ -22,7 +22,6 @@ from data import process_data
 from model import inference as infr
 
 # Heroku Code for DVC Integration
-import os
 if "DYNO" in os.environ and os.path.isdir(".dvc"):
     os.system("dvc config core.no_scm true")
     if os.system("dvc pull") != 0:
