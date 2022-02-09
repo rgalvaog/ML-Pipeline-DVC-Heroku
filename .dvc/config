@@ -1,0 +1,6 @@
+[core]
+    remote = storage
+['remote "s3-ml-heroku-pipeline"']
+    url = ../arn:aws:s3:::ml-heroku-pipeline
+['remote "storage"']
+    url = s3://ml-heroku-pipeline/dvcstore

@@ -1,4 +1,6 @@
-Working in a command line environment is recommended for ease of use with git and dvc. If on Windows, WSL1 or 2 is recommended.
+# GitHub Link
+
+A little meta since you are already here, but here is the link to this GitHub anyway: `https://github.com/rgalvaog/ML-Pipeline-DVC-Heroku`
 
 # Environment Set up
 * Download and install conda if you don’t have it already.
