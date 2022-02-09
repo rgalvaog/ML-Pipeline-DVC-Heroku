@@ -8,8 +8,6 @@ Main.py creates the endpoints for FastAPI.
 
 '''
 
-# Heroku Code for DVC Integration
-
 
 # Import libraries
 import os
@@ -20,6 +18,11 @@ from fastapi import FastAPI
 from pydantic import BaseModel
 from data import process_data
 from model import inference as infr
+
+# Get folder paths
+for root,dirs,files in os.walk(os.getcwd()):
+    if len(dirs)>0:
+        print(root)
 
 # Heroku Code for DVC Integration
 if "DYNO" in os.environ and os.path.isdir(".dvc"):
