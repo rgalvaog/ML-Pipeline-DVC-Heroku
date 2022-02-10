@@ -1,3 +1,12 @@
+'''
+sanitycheck.py
+
+Rafael Guerra
+Feb 2022
+
+Sanity check on GET and POST Methods.
+'''
+
 from os import path
 
 import argparse

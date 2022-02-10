@@ -2,6 +2,12 @@
 
 A little meta since you are already here, but here is the link to this GitHub anyway: `https://github.com/rgalvaog/ML-Pipeline-DVC-Heroku`
 
+# Heroku Link
+
+Here is the live deployed app in heroku:
+
+`https://ml-census.herokuapp.com/inference/`
+
 # Environment Set up
 * Download and install conda if you don’t have it already.
     * Use the supplied requirements file to create a new environment, or

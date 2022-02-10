@@ -1,7 +1,3 @@
-# Model Card
-
-For additional information see the Model Card paper: https://arxiv.org/pdf/1810.03993.pdf
-
 ## Model Details
 
 This project was conducted as part of the Udacity MLOps Engineer Nanodegree. The code contained herein was created by Rafael Guerra, with the help from instructor feedback and previously asked questions in the Udacity course forum. After experimenting with the SVM (Support Vector Machines) and the Logistic Regression models from scikit learn, I achieved better results with the latter, although the performance of both models still leave a lot to be desired and certainly has room for improvement.
