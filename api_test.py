@@ -57,20 +57,20 @@ def test_above_50K():
 
     # salary (not provided)
     prediction_above_50K = {
-        "age": 52,
-        "workclass": "Self-emp-not-inc",
-        "fnlgt": 209642,
-        "education": "HS-grad",
-        "education-num": 9,
-        "marital-status": "Married-civ-spouse",
-        "occupation": "Exec-managerial",
-        "relationship": "Husband",
-        "race": "White",
+        "age": 40,
+        "workclass": "Private",
+        "fnlgt": 121956,
+        "education": "Bachelors",
+        "education-num": 13,
+        "marital-status": "Married-spouse-absent",
+        "occupation": "Prof-specialty",
+        "relationship": "Not-in-family",
+        "race": "Asian-Pac-Islander",
         "sex": "Male",
-        "capital-gain": 0,
+        "capital-gain": 13550,
         "capital-loss": 0,
-        "hours-per-week": 45,
-        "native-country": "United-States",
+        "hours-per-week": 40,
+        "native-country": "Cambodia",
         "salary": ">50K"
     }
     r = client.post('/prediction/',data=json.dumps(prediction_above_50K))
