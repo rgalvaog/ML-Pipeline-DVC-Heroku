@@ -41,4 +41,3 @@ heroku_url = 'https://ml-census.herokuapp.com/inference/'
 # Generate response
 response = requests.post(heroku_url,example)
 print("Response: ",response)
-print("Status Code: ", response.status.code)
