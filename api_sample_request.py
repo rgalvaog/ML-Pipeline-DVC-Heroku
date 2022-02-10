@@ -40,4 +40,6 @@ heroku_url = 'https://ml-census.herokuapp.com/inference/'
 # Generate response
 response = requests.post(heroku_url,example)
 
+# Print Responses
 print(response)
+print("If <=50K then 0, else 1: ",response.json()['inference'])
