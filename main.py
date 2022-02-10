@@ -55,7 +55,7 @@ class Input(BaseModel):
 
 # Output is either 0 or 1, and therefore int or float
 class Output(BaseModel):
-    predict: Union[int,float]
+    inference: Union[int,float]
 
 # GET message that gives a welcome message
 @app.get("/")
@@ -65,7 +65,7 @@ async def greeting():
 # POST method that does model inference
 # Type Hinting must be used
 @app.post("/inference/", response_model=Output, status_code=200)
-async def predict(input: Input):
+async def inference(input: Input):
 
     cat_features = [
         "workclass",
@@ -79,17 +79,17 @@ async def predict(input: Input):
     ]
 
     # load predict_data
-    request_dict = input.dict(by_alias=True)
-    request_data = pd.DataFrame(request_dict, index=[0])
+    dictionary_data = input.dict(by_alias=True)
+    request_df = pd.DataFrame(dictionary_data, index=[0])
 
     # We only need X_test
     X_test, y_train, enc, load_balancing = process_data(
-        request_data,
+        request_df,
         categorical_features=cat_features,
         label="salary",
         training=False,
         encoder=encoder,
         lb=lb)
 
-    inference = model.predict(X_test)
-    return {"inference": inference[0]}
+    pred= model.predict(X_test)
+    return {"inference": pred[0]}
