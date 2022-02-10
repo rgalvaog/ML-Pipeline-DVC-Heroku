@@ -64,7 +64,7 @@ async def greeting():
 
 # POST method that does model inference
 # Type Hinting must be used
-@app.post("/prediction/", response_model=Output, status_code=200)
+@app.post("/inference/", response_model=Output, status_code=200)
 async def predict(input: Input):
 
     cat_features = [
@@ -91,5 +91,5 @@ async def predict(input: Input):
         encoder=encoder,
         lb=lb)
 
-    prediction = model.predict(X_test)
-    return {"predict": prediction[0]}
+    inference = model.predict(X_test)
+    return {"inference": inference[0]}

@@ -45,10 +45,10 @@ def test_below_50K():
         "salary": "<=50K"
     }
 
-    r = client.post('/prediction/',data=json.dumps(prediction_below_50K))
+    r = client.post('/inference/',data=json.dumps(prediction_below_50K))
 
     assert r.status_code == 200
-    assert r.json()['predict'] == 0
+    assert r.json()['inference'] == 0
     # class 0 represent salary <=50K, according to LabelBinarizer output
 
 # Post test above 50K
@@ -73,7 +73,7 @@ def test_above_50K():
         "native-country": "Cambodia",
         "salary": ">50K"
     }
-    r = client.post('/prediction/',data=json.dumps(prediction_above_50K))
+    r = client.post('/inference/',data=json.dumps(prediction_above_50K))
 
     assert r.status_code == 200
-    assert r.json()['predict'] == 1
+    assert r.json()['inference'] == 1
