@@ -8,21 +8,15 @@ Main.py creates the endpoints for FastAPI.
 
 '''
 
-
 # Import libraries
 import os
 import pandas as pd
 import pickle
-from typing import Union
+from typing import Union, Optional
 from fastapi import FastAPI
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from data import process_data
 from model import inference as infr
-
-# Get folder paths
-for root,dirs,files in os.walk(os.getcwd()):
-    if len(dirs)>0:
-        print(root)
 
 # Heroku Code for DVC Integration
 if "DYNO" in os.environ and os.path.isdir(".dvc"):
@@ -30,7 +24,6 @@ if "DYNO" in os.environ and os.path.isdir(".dvc"):
     if os.system("dvc pull") != 0:
         exit("dvc pull failed")
     os.system("rm -r .dvc .apt/usr/lib/dvc")
-
 
 #Instantiate FastAPI
 app = FastAPI()
@@ -40,60 +33,30 @@ model = pickle.load(open(os.getcwd() + '/model/' + 'model.pkl','rb'))
 encoder = pickle.load(open(os.getcwd() + '/model/' + 'encoder.pkl','rb'))
 lb = pickle.load(open(os.getcwd() + '/model/' + 'lb.pkl','rb'))
 
-# Load categorical variables
-cat_features = [
-        "workclass",
-        "education",
-        "marital-status",
-        "occupation",
-        "relationship",
-        "race",
-        "sex",
-        "native-country"
-    ]
-
-
-# Create class with type hints from Pydantic
+# Create Input Base Model
+# Example: First row of clean_census.csv
+# Expected output: <=50K
 class Input(BaseModel):
-    age: int
-    workclass: str
-    fnlgt: int
-    education: str
-    education_num: int
-    marital_status: str
-    occupation: str
-    relationship: str
-    race: str
-    sex: str
-    capital_gain: Union[int,float]
-    capital_loss: Union[int,float]
-    hours_per_week: Union[int,float]
-    native_country: str
+    age: Union[float,int] = Field(..., example=39)
+    workclass: str = Field(..., example="State-gov")
+    fnlgt: Union[float,int] = Field(..., example=77516)
+    education: str = Field(..., example="Bachelors")
+    education_num: Union[float,int] = Field(..., alias="education-num", example=13)
+    marital_status: str = Field(...,alias="marital-status",example="Never-married")
+    occupation: str = Field(..., example="Adm-clerical")
+    relationship: str = Field(..., example="Not-in-family")
+    race: str = Field(..., example="White")
+    sex: str = Field(..., example="Male")
+    capital_gain: Union[float,int] = Field(..., alias="capital-gain", example=2174)
+    capital_loss: Union[float,int] = Field(..., alias="capital-loss", example=0)
+    hours_per_week: Union[float,int] = Field(..., alias="hours-per-week", example=40)
+    native_country: str = Field(...,alias="native-country",example="United-States")
+    salary: Optional[str]
 
-    # Example
-    # This is the first entry of clean_census.csv
-    # Output should be <=50 or 0 in binary classification
-    class Config:
-        example = {
-            "individual_id": {
-                "age": 39,
-                "workclass": "State-gov",
-                "fnlgt": 77516,
-                "education": "Bachelors",
-                "education_num": 13,
-                "marital_status": "Never-married",
-                "occupation": "Adm-clerical",
-                "relationship": "Not-in-family",
-                "race": "White",
-                "sex": "Male",
-                "capital_gain": 2174,
-                "capital_loss": 0,
-                "hours_per_week": 40,
-                "native_country": "United-States"
-            }
-        }
+# Output is either 0 or 1, and therefore int or float
+class Output(BaseModel):
+    predict: Union[int,float]
 
-    
 # GET message that gives a welcome message
 @app.get("/")
 async def greeting():
@@ -101,25 +64,32 @@ async def greeting():
 
 # POST method that does model inference
 # Type Hinting must be used
-@app.post("/inference/")
-async def inference(data: Input):
-    data = pd.DataFrame([{
-                "age": data.age,
-                "workclass": data.workclass,
-                "fnlgt": data.fnlgt,
-                "education": data.education,
-                "education_num": data.education_num,
-                "marital_status": data.marital_status,
-                "occupation": data.occupation,
-                "relationship": data.relationship,
-                "race": data.race,
-                "sex": data.sex,
-                "capital_gain": data.capital_gain,
-                "capital_loss": data.capital_loss,
-                "hours_per_week": data.hours_per_week,
-                "native_country": data.native_country        
-    }])
+@app.post("/prediction/", response_model=Output, status_code=200)
+async def predict(input: Input):
 
-    X_test,_,_,_ = process_data(data,cat_features,False,encoder,lb)
-    inference = infr(model,X_test)
-    return inference
+    cat_features = [
+        "workclass",
+        "education",
+        "marital-status",
+        "occupation",
+        "relationship",
+        "race",
+        "sex",
+        "native-country",
+    ]
+
+    # load predict_data
+    request_dict = input.dict(by_alias=True)
+    request_data = pd.DataFrame(request_dict, index=[0])
+
+    # We only need X_test
+    X_test, y_train, enc, load_balancing = process_data(
+        request_data,
+        categorical_features=cat_features,
+        label="salary",
+        training=False,
+        encoder=encoder,
+        lb=lb)
+
+    prediction = model.predict(X_test)
+    return {"predict": prediction[0]}
